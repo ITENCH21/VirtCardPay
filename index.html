@@ -1,0 +1,2225 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light" data-lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="VirtCardPay — виртуальные карты с пополнением USDT. Оплачивайте зарубежные сервисы, подписки, AI, travel." />
+  <title>VirtCardPay — Виртуальные карты с пополнением USDT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* =========================================================
+       CSS VARIABLES — LIGHT / DARK THEME
+    ========================================================= */
+    :root {
+      --bg-primary:    #FFFFFF;
+      --bg-secondary:  #F4F7FF;
+      --bg-card:       #FFFFFF;
+      --text-primary:  #0F172A;
+      --text-secondary:#475569;
+      --text-muted:    #94A3B8;
+      --border:        #E2E8F0;
+      --blue:          #3B82F6;
+      --blue-dark:     #1D4ED8;
+      --blue-light:    #EFF6FF;
+      --navy:          #0D1B3E;
+      --green:         #10B981;
+      --yellow:        #F59E0B;
+      --red:           #EF4444;
+      --shadow:        0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+      --shadow-lg:     0 10px 30px rgba(0,0,0,.10);
+      --radius:        16px;
+      --radius-sm:     10px;
+      --transition:    .25s ease;
+    }
+    [data-theme="dark"] {
+      --bg-primary:    #0F172A;
+      --bg-secondary:  #1E293B;
+      --bg-card:       #1E293B;
+      --text-primary:  #F1F5F9;
+      --text-secondary:#94A3B8;
+      --text-muted:    #64748B;
+      --border:        #334155;
+      --blue-light:    #1E3A5F;
+      --shadow:        0 1px 3px rgba(0,0,0,.3);
+      --shadow-lg:     0 10px 30px rgba(0,0,0,.4);
+    }
+
+    /* =========================================================
+       RESET & BASE
+    ========================================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background var(--transition), color var(--transition);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; }
+    ul { list-style: none; }
+    img { max-width: 100%; display: block; }
+
+    /* =========================================================
+       NAVIGATION
+    ========================================================= */
+    .nav {
+      position: sticky; top: 0; z-index: 1000;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .nav__inner {
+      max-width: 1200px; margin: 0 auto; padding: 0 24px;
+      height: 64px; display: flex; align-items: center;
+      justify-content: space-between; gap: 16px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .logo__icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo__icon svg { width: 22px; height: 22px; fill: white; }
+    .logo__text { font-size: 18px; font-weight: 800; color: var(--text-primary); }
+    .logo__text span { color: var(--blue); }
+
+    .nav__links {
+      display: flex; align-items: center; gap: 2px;
+    }
+    .nav__links a {
+      padding: 7px 12px; font-size: 14px; font-weight: 500;
+      color: var(--text-secondary); border-radius: 8px;
+      transition: background var(--transition), color var(--transition);
+      white-space: nowrap;
+    }
+    .nav__links a:hover { background: var(--bg-secondary); color: var(--text-primary); }
+
+    .nav__controls {
+      display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+    }
+    .ctrl-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 11px; font-size: 13px; font-weight: 500;
+      color: var(--text-secondary); background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: 8px;
+      transition: all var(--transition);
+    }
+    .ctrl-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .ctrl-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    .btn-nav {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 18px; font-size: 14px; font-weight: 700;
+      background: linear-gradient(135deg, #2AABEE, #1A8CC7);
+      color: white; border: none; border-radius: 10px;
+      transition: all var(--transition);
+      box-shadow: 0 4px 14px rgba(42,171,238,.35);
+      white-space: nowrap;
+    }
+    .btn-nav:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(42,171,238,.5); }
+    .btn-nav svg { width: 16px; height: 16px; fill: white; }
+
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      padding: 8px; background: none; border: none;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--text-primary); border-radius: 2px;
+      transition: all var(--transition);
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none; position: fixed;
+      top: 64px; left: 0; right: 0;
+      background: var(--bg-primary); border-bottom: 1px solid var(--border);
+      padding: 12px 20px 20px; z-index: 998;
+      flex-direction: column; gap: 4px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      padding: 12px 16px; font-size: 15px; font-weight: 500;
+      color: var(--text-secondary); border-radius: 10px;
+      transition: all var(--transition);
+    }
+    .mobile-menu a:hover { background: var(--bg-secondary); color: var(--text-primary); }
+    .mobile-menu .btn-nav { margin-top: 8px; justify-content: center; }
+
+    /* =========================================================
+       HERO
+    ========================================================= */
+    .hero {
+      background: linear-gradient(160deg, #EEF2FF 0%, #DBEAFE 45%, #F0F9FF 100%);
+      padding: 80px 24px 64px; text-align: center; position: relative; overflow: hidden;
+    }
+    [data-theme="dark"] .hero {
+      background: linear-gradient(160deg, #0F172A 0%, #0D1E3F 45%, #0F172A 100%);
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,130,246,.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero__content { max-width: 820px; margin: 0 auto; position: relative; }
+    .hero__eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 50px; padding: 6px 14px;
+      font-size: 13px; font-weight: 600; color: var(--blue);
+      margin-bottom: 24px; box-shadow: var(--shadow);
+    }
+    .hero__eyebrow-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .7; transform: scale(1.3); }
+    }
+    .hero h1 {
+      font-size: clamp(30px, 5.5vw, 60px); font-weight: 900;
+      line-height: 1.12; letter-spacing: -1.5px; margin-bottom: 22px;
+    }
+    .hero h1 .accent { color: var(--blue); }
+    .hero__sub {
+      font-size: clamp(15px, 2vw, 18px); color: var(--text-secondary);
+      line-height: 1.65; max-width: 580px; margin: 0 auto 36px;
+    }
+    .hero__cta {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; margin-bottom: 40px; flex-wrap: wrap;
+    }
+    .btn-hero {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 15px 30px; font-size: 16px; font-weight: 800;
+      color: white; border: none; border-radius: 14px;
+      transition: all var(--transition); text-decoration: none;
+    }
+    .btn-hero.tg {
+      background: linear-gradient(135deg, #2AABEE, #1A8CC7);
+      box-shadow: 0 6px 24px rgba(42,171,238,.4);
+    }
+    .btn-hero.tg:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(42,171,238,.55); }
+    .btn-hero.outline {
+      background: var(--bg-card); color: var(--text-primary);
+      border: 1.5px solid var(--border); box-shadow: var(--shadow);
+    }
+    .btn-hero.outline:hover { border-color: var(--blue); color: var(--blue); }
+    .btn-hero svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+    .hero__badges {
+      display: flex; justify-content: center; gap: 12px;
+      flex-wrap: wrap; margin-bottom: 56px;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 50px; padding: 8px 16px;
+      font-size: 13px; font-weight: 600; color: var(--text-secondary);
+      box-shadow: var(--shadow);
+    }
+    .badge-icon { font-size: 16px; }
+    .badge .soon {
+      font-size: 10px; font-weight: 700; padding: 2px 7px;
+      background: rgba(245,158,11,.12); color: var(--yellow);
+      border: 1px solid rgba(245,158,11,.25); border-radius: 50px;
+    }
+
+    /* Phone Mockup */
+    .hero__visual {
+      display: flex; align-items: center; justify-content: center;
+      gap: 24px; flex-wrap: wrap; position: relative;
+    }
+    .phone {
+      width: 220px; height: 440px;
+      background: linear-gradient(165deg, #1A2744, #0F172A);
+      border-radius: 38px; border: 3px solid #2D3F6B;
+      position: relative; overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.07);
+      animation: float 4s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .phone__notch {
+      width: 80px; height: 20px; margin: 12px auto 0;
+      background: #0F172A; border-radius: 0 0 12px 12px;
+    }
+    .phone__screen {
+      padding: 8px 14px 14px;
+      background: linear-gradient(180deg, #1A3A6B 0%, #0F172A 100%);
+      height: calc(100% - 32px);
+    }
+    .vcard {
+      width: 100%; height: 110px;
+      border-radius: 14px; padding: 14px 14px 10px;
+      position: relative; overflow: hidden; margin-bottom: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.35);
+    }
+    .vcard.blue { background: linear-gradient(135deg, #3B82F6, #7C3AED); }
+    .vcard.green { background: linear-gradient(135deg, #059669, #3B82F6); }
+    .vcard::before {
+      content: ''; position: absolute;
+      top: -30px; right: -20px; width: 110px; height: 110px;
+      border-radius: 50%; background: rgba(255,255,255,.07);
+    }
+    .vcard__chip {
+      width: 26px; height: 19px; border-radius: 4px;
+      background: linear-gradient(135deg,#FCD34D,#F59E0B);
+      margin-bottom: 18px;
+    }
+    .vcard__num {
+      font-size: 10px; color: rgba(255,255,255,.75);
+      letter-spacing: 2px; font-family: monospace;
+    }
+    .vcard__brand {
+      position: absolute; bottom: 10px; right: 12px;
+      font-size: 10px; font-weight: 800; color: rgba(255,255,255,.9);
+    }
+    .vcard__logo {
+      position: absolute; top: 10px; right: 12px;
+      font-size: 9px; font-weight: 700; color: rgba(255,255,255,.8);
+      letter-spacing: .5px;
+    }
+    .phone__label {
+      font-size: 9px; color: rgba(255,255,255,.4);
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+    }
+    .phone__balance {
+      font-size: 22px; font-weight: 800; color: white; margin-bottom: 12px;
+    }
+    .phone__action {
+      display: flex; gap: 8px;
+    }
+    .phone__action-btn {
+      flex: 1; padding: 8px 4px; border-radius: 10px;
+      background: rgba(59,130,246,.2); border: 1px solid rgba(59,130,246,.3);
+      font-size: 9px; font-weight: 700; color: #93C5FD;
+      text-align: center;
+    }
+
+    /* Floating badges around phone */
+    .float-badge {
+      position: absolute; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 10px 14px; box-shadow: var(--shadow-lg);
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 600; color: var(--text-primary);
+      white-space: nowrap;
+    }
+    .float-badge--left { left: 0; top: 20%; }
+    .float-badge--right { right: 0; top: 35%; }
+    .float-badge--bottom { left: 50%; transform: translateX(-50%); bottom: -20px; }
+    .float-badge__icon { font-size: 18px; }
+
+    /* =========================================================
+       PARTNERS STRIP
+    ========================================================= */
+    .partners {
+      border-bottom: 1px solid var(--border); padding: 28px 24px;
+      background: var(--bg-primary);
+    }
+    .partners__inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; flex-wrap: wrap;
+    }
+    .partner-chip {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 16px; border-radius: 50px;
+      border: 1px solid var(--border); background: var(--bg-card);
+      font-size: 13px; font-weight: 700; color: var(--text-secondary);
+      box-shadow: var(--shadow); transition: all var(--transition);
+    }
+    .partner-chip:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-2px); }
+    .partner-chip__dot { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; }
+
+    /* =========================================================
+       STATS BAR
+    ========================================================= */
+    .stats-bar {
+      background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+      padding: 20px 24px;
+    }
+    .stats-bar__inner {
+      max-width: 900px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 6px;
+      font-size: 15px; font-weight: 500; color: var(--text-secondary);
+      text-align: center;
+    }
+    .stats-bar__num { color: var(--blue); font-size: 22px; font-weight: 900; }
+
+    /* =========================================================
+       SECTION WRAPPER & HEADINGS
+    ========================================================= */
+    .section { padding: 80px 24px; }
+    .section--grey { background: var(--bg-secondary); }
+    .section__inner { max-width: 1200px; margin: 0 auto; }
+    .section__head { text-align: center; margin-bottom: 48px; }
+    .section__title {
+      font-size: clamp(24px, 4vw, 42px); font-weight: 900;
+      line-height: 1.15; letter-spacing: -.5px; margin-bottom: 14px;
+    }
+    .section__title .accent { color: var(--blue); }
+    .section__sub {
+      font-size: 16px; color: var(--text-secondary); line-height: 1.65;
+      max-width: 580px; margin: 0 auto;
+    }
+
+    /* =========================================================
+       FEATURES GRID
+    ========================================================= */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(2,1fr); gap: 20px;
+    }
+    .feature-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px 28px 24px;
+      position: relative; overflow: hidden;
+      transition: all var(--transition);
+    }
+    .feature-card:hover {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(59,130,246,.08), var(--shadow-lg);
+      transform: translateY(-3px);
+    }
+    .feature-card__num {
+      position: absolute; top: 16px; right: 20px;
+      font-size: 36px; font-weight: 900; color: var(--border);
+      line-height: 1; user-select: none;
+    }
+    .feature-card__icon {
+      width: 50px; height: 50px; border-radius: 14px;
+      background: var(--blue-light); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 24px; margin-bottom: 18px;
+    }
+    .feature-card__title { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+    .feature-card__desc { font-size: 14px; color: var(--text-secondary); line-height: 1.65; }
+
+    /* =========================================================
+       STEPS (HOW IT WORKS)
+    ========================================================= */
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(5,1fr); gap: 14px;
+    }
+    .step-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 14px;
+      text-align: center; position: relative;
+      transition: all var(--transition);
+    }
+    .step-card:hover { border-color: var(--blue); transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .step-card::after {
+      content: '→'; position: absolute; right: -14px; top: 50%;
+      transform: translateY(-50%); color: var(--text-muted); font-size: 18px;
+      display: none;
+    }
+    .step-card:not(:last-child)::after { display: block; }
+    .step-card__num {
+      font-size: 10px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+    }
+    .step-phone {
+      width: 72px; height: 128px;
+      background: linear-gradient(165deg, #1A2744, #0F172A);
+      border-radius: 18px; border: 2px solid #2D3F6B;
+      margin: 0 auto 14px; display: flex; align-items: center;
+      justify-content: center; font-size: 28px;
+    }
+    .step-card__desc { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
+    .step-card__link { color: var(--blue); }
+
+    /* =========================================================
+       USDT BANNER
+    ========================================================= */
+    .usdt-wrap { padding: 0 24px; }
+    .usdt-banner {
+      max-width: 1200px; margin: 0 auto;
+      background: linear-gradient(135deg, #0D1B3E 0%, #1D4ED8 60%, #3B82F6 100%);
+      border-radius: 24px; padding: 44px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 32px; position: relative; overflow: hidden;
+    }
+    .usdt-banner::before {
+      content: ''; position: absolute;
+      top: -60%; right: -5%; width: 400px; height: 400px;
+      border-radius: 50%; background: rgba(255,255,255,.04);
+    }
+    .usdt-banner::after {
+      content: ''; position: absolute;
+      bottom: -40%; left: 30%; width: 300px; height: 300px;
+      border-radius: 50%; background: rgba(59,130,246,.15);
+    }
+    .usdt-banner__content { position: relative; z-index: 1; }
+    .usdt-banner__tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+      border-radius: 50px; padding: 5px 12px;
+      font-size: 12px; font-weight: 700; color: rgba(255,255,255,.9);
+      margin-bottom: 14px;
+    }
+    .usdt-banner h2 { font-size: clamp(20px,2.5vw,28px); font-weight: 800; color: white; margin-bottom: 12px; }
+    .usdt-banner p { font-size: 14px; color: rgba(255,255,255,.7); line-height: 1.7; max-width: 460px; }
+    .usdt-banner__right {
+      position: relative; z-index: 1; display: flex; flex-direction: column;
+      align-items: flex-end; gap: 12px; flex-shrink: 0;
+    }
+    .usdt-coins {
+      display: flex; gap: 8px; align-items: center;
+    }
+    .coin {
+      width: 52px; height: 52px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 900; color: white;
+      box-shadow: 0 4px 16px rgba(0,0,0,.25); border: 2px solid rgba(255,255,255,.15);
+    }
+    .coin--usdt { background: linear-gradient(135deg,#009393,#26A17B); font-size: 13px; }
+    .coin--btc  { background: linear-gradient(135deg,#F7931A,#FFAD33); font-size: 14px; }
+    .coin--eth  { background: linear-gradient(135deg,#627EEA,#8B9EFF); font-size: 14px; }
+    .usdt-banner .btn-hero { align-self: flex-start; }
+    .btn-hero.white {
+      background: white; color: #1D4ED8; box-shadow: 0 6px 24px rgba(0,0,0,.15);
+    }
+    .btn-hero.white:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(0,0,0,.25); }
+
+    /* =========================================================
+       PAYMENT METHODS (APPLE / GOOGLE PAY)
+    ========================================================= */
+    .pay-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    }
+    .pay-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 36px 32px;
+      display: flex; align-items: center; gap: 24px;
+      transition: all var(--transition);
+    }
+    .pay-card:hover { border-color: var(--blue); box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+    .pay-card__icon { font-size: 48px; flex-shrink: 0; }
+    .pay-card__title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+    .pay-card__desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* =========================================================
+       SERVICES CATALOG
+    ========================================================= */
+    .catalog-layout {
+      display: grid; grid-template-columns: 180px 1fr; gap: 32px;
+      align-items: start;
+    }
+    .catalog-tabs {
+      display: flex; flex-direction: column; gap: 4px;
+      position: sticky; top: 80px;
+    }
+    .tab-btn {
+      padding: 10px 14px; border: none; border-radius: 10px;
+      background: none; font-size: 14px; font-weight: 500;
+      color: var(--text-secondary); text-align: left;
+      cursor: pointer; transition: all var(--transition);
+    }
+    .tab-btn:hover { background: var(--blue-light); color: var(--blue); }
+    .tab-btn.active {
+      background: var(--blue-light); color: var(--blue); font-weight: 700;
+    }
+    .catalog-panel { display: none; }
+    .catalog-panel.active { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+    .svc-chip {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: var(--text-primary);
+      min-height: 56px; transition: all var(--transition); text-align: center;
+    }
+    .svc-chip:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--blue); color: var(--blue); }
+
+    /* =========================================================
+       PRICING CARDS
+    ========================================================= */
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 20px;
+    }
+    .pricing-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      transition: all var(--transition); position: relative;
+    }
+    .pricing-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+    .pricing-card.featured { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(59,130,246,.15); }
+    .pricing-badge-top {
+      position: absolute; top: 0; right: 0;
+      background: linear-gradient(135deg,#F59E0B,#EF4444);
+      color: white; font-size: 10px; font-weight: 800;
+      padding: 5px 12px; border-radius: 0 0 0 12px;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .pricing-header {
+      padding: 28px 28px 20px; display: flex; justify-content: center;
+      background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+    }
+    .pcard {
+      width: 168px; height: 104px; border-radius: 14px;
+      position: relative; overflow: hidden;
+      box-shadow: 0 10px 28px rgba(0,0,0,.22);
+    }
+    .pcard--sub    { background: linear-gradient(135deg,#7C3AED,#EC4899); }
+    .pcard--travel { background: linear-gradient(135deg,#3B82F6,#06B6D4); }
+    .pcard--pro    { background: linear-gradient(135deg,#374151,#111827); }
+    .pcard::before {
+      content: ''; position: absolute; top: -20px; right: -20px;
+      width: 90px; height: 90px; border-radius: 50%;
+      background: rgba(255,255,255,.10);
+    }
+    .pcard__chip {
+      position: absolute; top: 12px; left: 12px;
+      width: 22px; height: 16px; border-radius: 3px;
+      background: linear-gradient(135deg,#FCD34D,#F59E0B);
+    }
+    .pcard__num {
+      position: absolute; bottom: 22px; left: 12px;
+      font-size: 8px; color: rgba(255,255,255,.7);
+      letter-spacing: 1.5px; font-family: monospace;
+    }
+    .pcard__brand {
+      position: absolute; bottom: 8px; right: 10px;
+      font-size: 9px; font-weight: 800; color: rgba(255,255,255,.9);
+    }
+    .pcard__name {
+      position: absolute; top: 10px; right: 10px;
+      font-size: 8px; font-weight: 800; color: rgba(255,255,255,.8);
+    }
+    .pricing-body { padding: 24px; }
+    .pricing-title { font-size: 19px; font-weight: 800; margin-bottom: 6px; }
+    .pricing-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+    .pricing-rows { border-top: 1px solid var(--border); }
+    .pricing-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 11px 0; border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .pricing-row:last-child { border-bottom: none; }
+    .row-label { color: var(--text-secondary); }
+    .row-val { font-weight: 700; }
+    .row-val.green { color: var(--green); }
+    .row-val.muted { color: var(--text-muted); }
+    .check { color: var(--green); font-size: 16px; }
+    .cross { color: var(--red); font-size: 16px; }
+    .pricing-cta {
+      margin-top: 20px; width: 100%; padding: 14px;
+      border: none; border-radius: 12px; font-size: 14px; font-weight: 800;
+      cursor: pointer; transition: all var(--transition);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .pricing-cta.blue {
+      background: linear-gradient(135deg,#3B82F6,#1D4ED8);
+      color: white; box-shadow: 0 4px 14px rgba(59,130,246,.35);
+    }
+    .pricing-cta.dark { background: linear-gradient(135deg,#374151,#111827); color: white; }
+    .pricing-cta:hover { transform: translateY(-2px); }
+    .pricing-cta svg { width: 16px; height: 16px; fill: white; }
+
+    /* =========================================================
+       ADVANTAGES
+    ========================================================= */
+    .adv-grid {
+      display: grid; grid-template-columns: repeat(2,1fr); gap: 16px;
+    }
+    .adv-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px;
+      display: flex; gap: 18px; align-items: flex-start;
+      transition: all var(--transition);
+    }
+    .adv-card:hover { border-color: var(--blue); box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+    .adv-card--featured {
+      background: linear-gradient(135deg,#1D4ED8,#3B82F6);
+      border-color: transparent; color: white;
+    }
+    .adv-card--featured .adv-card__desc { color: rgba(255,255,255,.75); }
+    .adv-card--featured .adv-icon { background: rgba(255,255,255,.15); }
+    .adv-icon {
+      width: 50px; height: 50px; border-radius: 14px;
+      background: var(--blue-light); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+    }
+    .adv-card__title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .adv-card__desc { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+
+    /* =========================================================
+       ACHIEVEMENTS
+    ========================================================= */
+    .ach-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;
+    }
+    .ach-card {
+      text-align: center; padding: 36px 24px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); transition: all var(--transition);
+    }
+    .ach-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--blue); }
+    .ach-icon { font-size: 44px; margin-bottom: 16px; }
+    .ach-num { font-size: 36px; font-weight: 900; color: var(--blue); margin-bottom: 8px; }
+    .ach-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .ach-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* =========================================================
+       REVIEWS
+    ========================================================= */
+    .reviews-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 18px;
+    }
+    .review-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px;
+      transition: all var(--transition);
+    }
+    .review-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+    .review-stars { font-size: 14px; color: var(--yellow); margin-bottom: 12px; }
+    .review-text { font-size: 14px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 16px; }
+    .review-author { display: flex; align-items: center; gap: 10px; }
+    .review-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: white; flex-shrink: 0;
+    }
+    .review-name { font-size: 13px; font-weight: 700; }
+    .review-date { font-size: 11px; color: var(--text-muted); }
+
+    /* =========================================================
+       REFERRAL
+    ========================================================= */
+    .ref-grid {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 16px;
+    }
+    .ref-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px 18px; text-align: center;
+      transition: all var(--transition);
+    }
+    .ref-card:hover { border-color: var(--blue); box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+    .ref-num { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+    .ref-icon { font-size: 38px; margin-bottom: 12px; }
+    .ref-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+    .ref-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* =========================================================
+       FAQ
+    ========================================================= */
+    .faq-list { display: flex; flex-direction: column; gap: 8px; }
+    .faq-item {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    .faq-q {
+      width: 100%; padding: 20px 24px;
+      display: flex; justify-content: space-between; align-items: center; gap: 16px;
+      background: none; border: none; color: var(--text-primary);
+      font-size: 15px; font-weight: 600; text-align: left; cursor: pointer;
+      transition: background var(--transition);
+    }
+    .faq-q:hover { background: var(--bg-secondary); }
+    .faq-arrow { font-size: 18px; color: var(--text-muted); flex-shrink: 0; transition: transform .3s ease; }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+    .faq-item.open .faq-a { max-height: 400px; }
+    .faq-a-inner {
+      padding: 0 24px 20px;
+      font-size: 14px; color: var(--text-secondary); line-height: 1.75;
+    }
+
+    /* =========================================================
+       FOOTER
+    ========================================================= */
+    footer {
+      background: #0D1B3E; color: white;
+      padding: 60px 24px 32px;
+    }
+    [data-theme="dark"] footer { background: #020817; }
+    .footer-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 2.2fr 1fr 1fr 1.3fr;
+      gap: 40px; margin-bottom: 48px;
+    }
+    .footer-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .footer-logo__icon {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: linear-gradient(135deg,#3B82F6,#1D4ED8);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .footer-logo__icon svg { width: 20px; height: 20px; fill: white; }
+    .footer-logo__text { font-size: 18px; font-weight: 800; color: white; }
+    .footer-logo__text span { color: #60A5FA; }
+    .footer-desc {
+      font-size: 13px; color: rgba(255,255,255,.5);
+      line-height: 1.75; margin-bottom: 20px;
+    }
+    .footer-legal {
+      padding: 14px 16px; border-radius: 8px;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+      font-size: 11px; color: rgba(255,255,255,.3); line-height: 1.7;
+    }
+    .footer-legal em { font-style: italic; color: rgba(255,255,255,.2); }
+    .footer-col h4 { font-size: 13px; font-weight: 800; color: rgba(255,255,255,.85); margin-bottom: 16px; text-transform: uppercase; letter-spacing: .5px; }
+    .footer-links { display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a { font-size: 13px; color: rgba(255,255,255,.5); transition: color var(--transition); }
+    .footer-links a:hover { color: #60A5FA; }
+    .footer-contact-box {
+      padding: 16px; border-radius: 10px;
+      background: rgba(255,255,255,.04); border: 1px dashed rgba(255,255,255,.15);
+      font-size: 12px; color: rgba(255,255,255,.3); line-height: 1.75;
+    }
+    .footer-contact-box em { font-style: italic; }
+    .footer-contact-tg {
+      margin-top: 12px; display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 16px; border-radius: 10px;
+      background: rgba(42,171,238,.15); border: 1px solid rgba(42,171,238,.3);
+      color: #7DD3FC; font-size: 13px; font-weight: 700;
+      transition: all var(--transition);
+    }
+    .footer-contact-tg:hover { background: rgba(42,171,238,.25); color: white; }
+    .footer-bottom {
+      max-width: 1200px; margin: 0 auto;
+      padding-top: 24px; border-top: 1px solid rgba(255,255,255,.07);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 14px;
+    }
+    .footer-bottom-links { display: flex; gap: 20px; flex-wrap: wrap; }
+    .footer-bottom-links a { font-size: 12px; color: rgba(255,255,255,.35); transition: color var(--transition); }
+    .footer-bottom-links a:hover { color: rgba(255,255,255,.7); }
+    .footer-copy { font-size: 12px; color: rgba(255,255,255,.25); }
+
+    /* =========================================================
+       UTILITIES
+    ========================================================= */
+    .mt-48 { margin-top: 48px; }
+    .tg-cta-section {
+      text-align: center; margin-top: 40px;
+      display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
+    }
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+    @media (max-width: 1024px) {
+      .steps-grid { grid-template-columns: repeat(3,1fr); }
+      .step-card:not(:last-child)::after { display: none; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .catalog-layout { grid-template-columns: 1fr; }
+      .catalog-tabs { flex-direction: row; flex-wrap: wrap; }
+      .catalog-panel.active { grid-template-columns: repeat(3,1fr); }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
+      .ref-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 768px) {
+      .nav__links { display: none; }
+      .hamburger { display: flex; }
+      .hero { padding: 56px 20px 48px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: repeat(2,1fr); }
+      .pay-grid { grid-template-columns: 1fr; }
+      .adv-grid { grid-template-columns: 1fr; }
+      .ach-grid { grid-template-columns: 1fr; }
+      .reviews-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .usdt-banner { flex-direction: column; text-align: center; padding: 32px 24px; }
+      .usdt-banner__right { align-items: center; }
+      .usdt-banner p { margin: 0 auto; }
+      .float-badge--left, .float-badge--right { display: none; }
+      .section { padding: 56px 20px; }
+      .catalog-panel.active { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 540px) {
+      .steps-grid { grid-template-columns: 1fr; }
+      .ref-grid { grid-template-columns: 1fr; }
+      .ctrl-btn .ctrl-label { display: none; }
+      .hero__badges { flex-direction: column; align-items: center; }
+      .usdt-wrap { padding: 0 16px; }
+    }
+    @media (max-width: 380px) {
+      .nav__inner { padding: 0 14px; }
+      .hero h1 { font-size: 26px; }
+    }
+    /* MacBook / HiDPI corrections */
+    @media (-webkit-min-device-pixel-ratio: 2) {
+      .phone { box-shadow: 0 40px 80px rgba(0,0,0,.25), 0 0 0 .5px rgba(255,255,255,.1); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===================== NAVIGATION ===================== -->
+<nav class="nav">
+  <div class="nav__inner">
+    <!-- Logo -->
+    <a href="#" class="logo">
+      <div class="logo__icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="5" width="22" height="14" rx="3" fill="none" stroke="white" stroke-width="1.8"/>
+          <path d="M1 9h22" stroke="white" stroke-width="1.8"/>
+          <rect x="4" y="13" width="6" height="2" rx="1" fill="white"/>
+        </svg>
+      </div>
+      <span class="logo__text">Virt<span>Card</span>Pay</span>
+    </a>
+
+    <!-- Desktop Nav Links -->
+    <ul class="nav__links">
+      <li><a href="#features" data-i18n="nav.cards">Виртуальные карты</a></li>
+      <li><a href="#how" data-i18n="nav.how">Как это работает</a></li>
+      <li><a href="#pricing" data-i18n="nav.pricing">Тарифы</a></li>
+      <li><a href="#faq" data-i18n="nav.faq">FAQ</a></li>
+      <li><a href="#contacts" data-i18n="nav.contacts">Контакты</a></li>
+    </ul>
+
+    <!-- Controls: theme + lang + CTA -->
+    <div class="nav__controls">
+      <!-- Theme Toggle -->
+      <button class="ctrl-btn" id="themeToggle" aria-label="Toggle theme">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <span class="ctrl-label" id="themeLabel" data-i18n="nav.light">Светлая</span>
+      </button>
+      <!-- Lang Toggle -->
+      <button class="ctrl-btn" id="langToggle" aria-label="Toggle language">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        <span class="ctrl-label" id="langLabel">RU</span>
+      </button>
+      <!-- CTA Button -->
+      <a href="https://t.me/virtcardpay" target="_blank" rel="noopener" class="btn-nav">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.95 8.17l-2.03 9.56c-.15.67-.54.84-1.09.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.61.3l.21-3.02 5.47-4.94c.24-.21-.05-.33-.36-.12L7.08 14.52l-2.96-.93c-.64-.2-.65-.64.14-.95l11.57-4.46c.53-.2 1 .13.83.99z"/>
+        </svg>
+        <span data-i18n="nav.cta">Получить карту</span>
+      </a>
+      <!-- Hamburger -->
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#features" data-i18n="nav.cards">Виртуальные карты</a>
+  <a href="#how" data-i18n="nav.how">Как это работает</a>
+  <a href="#pricing" data-i18n="nav.pricing">Тарифы</a>
+  <a href="#faq" data-i18n="nav.faq">FAQ</a>
+  <a href="#contacts" data-i18n="nav.contacts">Контакты</a>
+  <a href="https://t.me/virtcardpay" target="_blank" rel="noopener" class="btn-nav">
+    <svg viewBox="0 0 24 24" fill="white" width="16" height="16">
+      <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.95 8.17l-2.03 9.56c-.15.67-.54.84-1.09.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.61.3l.21-3.02 5.47-4.94c.24-.21-.05-.33-.36-.12L7.08 14.52l-2.96-.93c-.64-.2-.65-.64.14-.95l11.57-4.46c.53-.2 1 .13.83.99z"/>
+    </svg>
+    <span data-i18n="nav.cta">Получить карту</span>
+  </a>
+</div>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="hero__content">
+    <div class="hero__eyebrow">
+      <span class="hero__eyebrow-dot"></span>
+      <span data-i18n="hero.eyebrow">Виртуальные карты нового поколения</span>
+    </div>
+
+    <h1>
+      <span data-i18n="hero.h1a">Иностранная карта</span><br/>
+      <span class="accent" data-i18n="hero.h1b">с пополнением USDT</span>
+    </h1>
+
+    <p class="hero__sub" data-i18n="hero.sub">
+      Получите виртуальную Visa/Mastercard за 2 минуты прямо в Telegram.
+      Оплачивайте подписки, AI-сервисы, travel и интернет-магазины по всему миру.
+    </p>
+
+    <div class="hero__cta">
+      <a href="https://t.me/virtcardpay" target="_blank" rel="noopener" class="btn-hero tg">
+        <svg viewBox="0 0 24 24" fill="white" width="20" height="20">
+          <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.95 8.17l-2.03 9.56c-.15.67-.54.84-1.09.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.61.3l.21-3.02 5.47-4.94c.24-.21-.05-.33-.36-.12L7.08 14.52l-2.96-.93c-.64-.2-.65-.64.14-.95l11.57-4.46c.53-.2 1 .13.83.99z"/>
+        </svg>
+        <span data-i18n="hero.cta1">Открыть карту в Telegram</span>
+      </a>
+      <a href="#features" class="btn-hero outline">
+        <span data-i18n="hero.cta2">Узнать подробнее</span>
+        <span>→</span>
+      </a>
+    </div>
+
+    <!-- Badges: top-up methods -->
+    <div class="hero__badges">
+      <span class="badge">
+        <span class="badge-icon">💎</span>
+        <span data-i18n="badge.usdt">Пополнение USDT (TRC-20 / ERC-20)</span>
+      </span>
+      <span class="badge">
+        <span class="badge-icon">🇷🇺</span>
+        <span data-i18n="badge.rub">Пополнение рублями</span>
+        <span class="soon" data-i18n="badge.soon">Скоро</span>
+      </span>
+      <span class="badge">
+        <span class="badge-icon">🔒</span>
+        <span data-i18n="badge.secure">3D Secure защита</span>
+      </span>
+    </div>
+
+    <!-- Visual: phone mockup -->
+    <div class="hero__visual">
+      <!-- Left floating badge -->
+      <div class="float-badge float-badge--left">
+        <span class="float-badge__icon">✅</span>
+        <div>
+          <div style="font-size:11px;color:var(--text-muted)" data-i18n="badge.paid">Оплачено</div>
+          <div style="font-size:13px;font-weight:800">Netflix — $15.99</div>
+        </div>
+      </div>
+
+      <!-- Phone -->
+      <div class="phone">
+        <div class="phone__notch"></div>
+        <div class="phone__screen">
+          <!-- Card 1 -->
+          <div class="vcard blue">
+            <div class="vcard__logo">VirtCardPay</div>
+            <div class="vcard__chip"></div>
+            <div class="vcard__num">4242 •••• •••• 7891</div>
+            <div class="vcard__brand">VISA</div>
+          </div>
+          <!-- Card 2 small -->
+          <div class="vcard green" style="height:80px;">
+            <div class="vcard__logo" style="font-size:7px;">VirtCardPay</div>
+            <div class="vcard__chip" style="width:18px;height:13px;margin-bottom:12px;"></div>
+            <div class="vcard__num" style="font-size:8px;">5367 •••• •••• 2048</div>
+            <div class="vcard__brand" style="font-size:8px;">MC</div>
+          </div>
+          <!-- Balance -->
+          <div class="phone__label" data-i18n="phone.balance">Баланс карты</div>
+          <div class="phone__balance">$847.20</div>
+          <div class="phone__action">
+            <div class="phone__action-btn" data-i18n="phone.topup">Пополнить</div>
+            <div class="phone__action-btn" data-i18n="phone.transfer">Перевод</div>
+            <div class="phone__action-btn" data-i18n="phone.history">История</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right floating badge -->
+      <div class="float-badge float-badge--right">
+        <span class="float-badge__icon">⚡</span>
+        <div>
+          <div style="font-size:11px;color:var(--text-muted)" data-i18n="badge.speed">Скорость открытия</div>
+          <div style="font-size:13px;font-weight:800" data-i18n="badge.min">2 минуты</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PARTNERS STRIP ===================== -->
+<section class="partners">
+  <div class="partners__inner">
+    <div class="partner-chip">
+      <div class="partner-chip__dot" style="background:#1A1F71;"></div>
+      <span>VISA</span>
+    </div>
+    <div class="partner-chip">
+      <div class="partner-chip__dot" style="background:#EB001B;"></div>
+      <span>Mastercard</span>
+    </div>
+    <div class="partner-chip">
+      <div class="partner-chip__dot" style="background:#26A17B;"></div>
+      <span>USDT Tether</span>
+    </div>
+    <div class="partner-chip">
+      <div class="partner-chip__dot" style="background:#F7931A;"></div>
+      <span>Bitcoin</span>
+    </div>
+    <div class="partner-chip">
+      <div class="partner-chip__dot" style="background:#627EEA;"></div>
+      <span>Ethereum</span>
+    </div>
+    <div class="partner-chip">
+      <div class="partner-chip__dot" style="background:#0088CC;"></div>
+      <span>Telegram Pay</span>
+    </div>
+    <div class="partner-chip">
+      <div class="partner-chip__dot" style="background:#000000;"></div>
+      <span>Apple Pay</span>
+    </div>
+    <div class="partner-chip">
+      <div class="partner-chip__dot" style="background:#4285F4;"></div>
+      <span>Google Pay</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STATS BAR ===================== -->
+<div class="stats-bar">
+  <div class="stats-bar__inner">
+    <span data-i18n="stats.prefix">Уже более</span>
+    <span class="stats-bar__num">50 000+</span>
+    <span data-i18n="stats.suffix">активных пользователей доверяют VirtCardPay</span>
+    &nbsp;🚀
+  </div>
+</div>
+
+<!-- ===================== FEATURES ===================== -->
+<section class="section" id="features">
+  <div class="section__inner">
+    <div class="section__head">
+      <h2 class="section__title" data-i18n="feat.title">
+        Почему выбирают <span class="accent">VirtCardPay</span>
+      </h2>
+      <p class="section__sub" data-i18n="feat.sub">
+        Простой и безопасный способ оплачивать иностранные сервисы без ограничений
+      </p>
+    </div>
+    <div class="features-grid">
+      <!-- Card 1 -->
+      <div class="feature-card">
+        <div class="feature-card__num">01</div>
+        <div class="feature-card__icon">⚡</div>
+        <div class="feature-card__title" data-i18n="feat1.title">Открытие за 2 минуты</div>
+        <p class="feature-card__desc" data-i18n="feat1.desc">
+          Зарегистрируйтесь через Telegram-бот и получите виртуальную карту моментально — без банка, без документов, без ожидания.
+        </p>
+      </div>
+      <!-- Card 2 -->
+      <div class="feature-card">
+        <div class="feature-card__num">02</div>
+        <div class="feature-card__icon">💎</div>
+        <div class="feature-card__title" data-i18n="feat2.title">Пополнение через USDT</div>
+        <p class="feature-card__desc" data-i18n="feat2.desc">
+          Пополняйте карту криптовалютой USDT (TRC-20, ERC-20) мгновенно. Пополнение рублями появится совсем скоро.
+        </p>
+      </div>
+      <!-- Card 3 -->
+      <div class="feature-card">
+        <div class="feature-card__num">03</div>
+        <div class="feature-card__icon">🌍</div>
+        <div class="feature-card__title" data-i18n="feat3.title">Работает по всему миру</div>
+        <p class="feature-card__desc" data-i18n="feat3.desc">
+          Visa и Mastercard — принимаются в 200+ странах и миллионах интернет-магазинов. Без ограничений и блокировок.
+        </p>
+      </div>
+      <!-- Card 4 -->
+      <div class="feature-card">
+        <div class="feature-card__num">04</div>
+        <div class="feature-card__icon">📱</div>
+        <div class="feature-card__title" data-i18n="feat4.title">Apple Pay & Google Pay</div>
+        <p class="feature-card__desc" data-i18n="feat4.desc">
+          Привяжите карту к Apple Wallet или Google Pay за 1 минуту и платите бесконтактно в любом магазине.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOW IT WORKS ===================== -->
+<section class="section section--grey" id="how">
+  <div class="section__inner">
+    <div class="section__head">
+      <h2 class="section__title" data-i18n="how.title">
+        Карта в <span class="accent">Telegram</span> за 2 минуты
+      </h2>
+      <p class="section__sub" data-i18n="how.sub">
+        Никаких отделений банка, никаких документов — только Telegram
+      </p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-card__num" data-i18n="step.num1">Шаг 1</div>
+        <div class="step-phone">🤖</div>
+        <p class="step-card__desc">
+          <strong data-i18n="step1.title">Откройте бот</strong><br/>
+          <span data-i18n="step1.desc">Перейдите в </span>
+          <a href="https://t.me/virtcardpay" target="_blank" class="step-card__link">@virtcardpay</a>
+          <span data-i18n="step1.desc2"> и нажмите «Старт»</span>
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-card__num" data-i18n="step.num2">Шаг 2</div>
+        <div class="step-phone">📝</div>
+        <p class="step-card__desc">
+          <strong data-i18n="step2.title">Регистрация</strong><br/>
+          <span data-i18n="step2.desc">Укажите имя и email. Это займёт меньше минуты</span>
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-card__num" data-i18n="step.num3">Шаг 3</div>
+        <div class="step-phone">💳</div>
+        <p class="step-card__desc">
+          <strong data-i18n="step3.title">Выберите карту</strong><br/>
+          <span data-i18n="step3.desc">Subscription, Travel или Premium — на любой случай жизни</span>
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-card__num" data-i18n="step.num4">Шаг 4</div>
+        <div class="step-phone">💎</div>
+        <p class="step-card__desc">
+          <strong data-i18n="step4.title">Пополните USDT</strong><br/>
+          <span data-i18n="step4.desc">Отправьте USDT на ваш персональный адрес — зачисление моментально</span>
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-card__num" data-i18n="step.num5">Шаг 5</div>
+        <div class="step-phone">🛍️</div>
+        <p class="step-card__desc">
+          <strong data-i18n="step5.title">Платите везде!</strong><br/>
+          <span data-i18n="step5.desc">Netflix, ChatGPT, Amazon, Booking — теперь всё доступно</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="tg-cta-section">
+      <a href="https://t.me/virtcardpay" target="_blank" rel="noopener" class="btn-hero tg">
+        <svg viewBox="0 0 24 24" fill="white" width="20" height="20">
+          <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.95 8.17l-2.03 9.56c-.15.67-.54.84-1.09.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.61.3l.21-3.02 5.47-4.94c.24-.21-.05-.33-.36-.12L7.08 14.52l-2.96-.93c-.64-.2-.65-.64.14-.95l11.57-4.46c.53-.2 1 .13.83.99z"/>
+        </svg>
+        <span data-i18n="how.cta">Открыть карту бесплатно</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== USDT BANNER ===================== -->
+<div class="usdt-wrap" style="padding-top:64px;padding-bottom:64px;">
+  <div class="usdt-banner">
+    <div class="usdt-banner__content">
+      <div class="usdt-banner__tag">💎 USDT TRC-20 / ERC-20</div>
+      <h2 data-i18n="usdt.title">Пополнение карты через USDT</h2>
+      <p data-i18n="usdt.desc">
+        Отправьте USDT на персональный адрес кошелька — средства поступают на баланс карты
+        в течение нескольких минут. Комиссия сети — минимальная.
+        Пополнение рублями через банк появится в ближайшее время.
+      </p>
+      <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
+        <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:5px 12px;font-size:12px;font-weight:700;color:rgba(255,255,255,.9);">✅ <span data-i18n="usdt.tag1">Мгновенное зачисление</span></span>
+        <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:50px;padding:5px 12px;font-size:12px;font-weight:700;color:rgba(255,255,255,.9);">✅ <span data-i18n="usdt.tag2">Без лимитов</span></span>
+        <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);border-radius:50px;padding:5px 12px;font-size:12px;font-weight:700;color:#FCD34D;">🕐 <span data-i18n="usdt.tag3">Рубли — скоро</span></span>
+      </div>
+    </div>
+    <div class="usdt-banner__right">
+      <div class="usdt-coins">
+        <div class="coin coin--usdt">₮</div>
+        <div class="coin coin--btc">₿</div>
+        <div class="coin coin--eth">Ξ</div>
+      </div>
+      <a href="https://t.me/virtcardpay" target="_blank" rel="noopener" class="btn-hero white" style="margin-top:8px;">
+        <span data-i18n="usdt.cta">Пополнить сейчас</span>
+        <span>→</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== APPLE / GOOGLE PAY ===================== -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__head">
+      <h2 class="section__title" data-i18n="pay.title">
+        Привяжите к <span class="accent">Apple Pay</span> или <span class="accent">Google Pay</span>
+      </h2>
+      <p class="section__sub" data-i18n="pay.sub">Добавьте вашу виртуальную карту в смартфон за 1 минуту</p>
+    </div>
+    <div class="pay-grid">
+      <div class="pay-card">
+        <div class="pay-card__icon">🍎</div>
+        <div>
+          <div class="pay-card__title">Apple Pay</div>
+          <p class="pay-card__desc" data-i18n="pay.apple">
+            Добавьте карту VirtCardPay в Apple Wallet и платите бесконтактно на iPhone, iPad и Apple Watch. iOS 14+ и выше.
+          </p>
+        </div>
+      </div>
+      <div class="pay-card">
+        <div class="pay-card__icon">🤖</div>
+        <div>
+          <div class="pay-card__title">Google Pay</div>
+          <p class="pay-card__desc" data-i18n="pay.google">
+            Добавьте карту в Google Wallet и платите через Android. Работает на всех устройствах с NFC и Android 8+.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SERVICES CATALOG ===================== -->
+<section class="section section--grey" id="services">
+  <div class="section__inner">
+    <div class="section__head">
+      <h2 class="section__title" data-i18n="svc.title">
+        Оплачивайте любые <span class="accent">зарубежные сервисы</span>
+      </h2>
+      <p class="section__sub" data-i18n="svc.sub">Тысячи платформ и магазинов — всё работает с VirtCardPay</p>
+    </div>
+    <div class="catalog-layout">
+      <!-- Tabs -->
+      <div class="catalog-tabs">
+        <button class="tab-btn active" data-tab="streaming" data-i18n="tab.streaming">🎬 Стриминг</button>
+        <button class="tab-btn" data-tab="ai" data-i18n="tab.ai">🤖 AI сервисы</button>
+        <button class="tab-btn" data-tab="travel" data-i18n="tab.travel">✈️ Путешествия</button>
+        <button class="tab-btn" data-tab="shopping" data-i18n="tab.shopping">🛍️ Шопинг</button>
+        <button class="tab-btn" data-tab="work" data-i18n="tab.work">💼 Работа & Инструменты</button>
+        <button class="tab-btn" data-tab="games" data-i18n="tab.games">🎮 Игры</button>
+      </div>
+      <!-- Panels -->
+      <div>
+        <div class="catalog-panel active" id="tab-streaming">
+          <div class="svc-chip">Netflix</div>
+          <div class="svc-chip">Spotify</div>
+          <div class="svc-chip">HBO Max</div>
+          <div class="svc-chip">Amazon Prime</div>
+          <div class="svc-chip">YouTube Premium</div>
+          <div class="svc-chip">Disney+</div>
+          <div class="svc-chip">Crunchyroll</div>
+          <div class="svc-chip">SoundCloud</div>
+          <div class="svc-chip">Tidal</div>
+          <div class="svc-chip">Deezer</div>
+          <div class="svc-chip">Audible</div>
+          <div class="svc-chip">Hulu</div>
+        </div>
+        <div class="catalog-panel" id="tab-ai">
+          <div class="svc-chip">ChatGPT Plus</div>
+          <div class="svc-chip">Midjourney</div>
+          <div class="svc-chip">Claude AI</div>
+          <div class="svc-chip">Runway ML</div>
+          <div class="svc-chip">ElevenLabs</div>
+          <div class="svc-chip">Perplexity AI</div>
+          <div class="svc-chip">Suno AI</div>
+          <div class="svc-chip">Kling AI</div>
+          <div class="svc-chip">Stable Diffusion</div>
+          <div class="svc-chip">GitHub Copilot</div>
+          <div class="svc-chip">Jasper AI</div>
+          <div class="svc-chip">Cursor AI</div>
+        </div>
+        <div class="catalog-panel" id="tab-travel">
+          <div class="svc-chip">Booking.com</div>
+          <div class="svc-chip">Airbnb</div>
+          <div class="svc-chip">Uber</div>
+          <div class="svc-chip">Trip.com</div>
+          <div class="svc-chip">Hotels.com</div>
+          <div class="svc-chip">Expedia</div>
+          <div class="svc-chip">Agoda</div>
+          <div class="svc-chip">Skyscanner</div>
+          <div class="svc-chip">Kayak</div>
+          <div class="svc-chip">Rentalcars</div>
+          <div class="svc-chip">GetYourGuide</div>
+          <div class="svc-chip">Klook</div>
+        </div>
+        <div class="catalog-panel" id="tab-shopping">
+          <div class="svc-chip">Amazon</div>
+          <div class="svc-chip">eBay</div>
+          <div class="svc-chip">Etsy</div>
+          <div class="svc-chip">Shopify</div>
+          <div class="svc-chip">ASOS</div>
+          <div class="svc-chip">Zara</div>
+          <div class="svc-chip">H&M Online</div>
+          <div class="svc-chip">iHerb</div>
+          <div class="svc-chip">Farfetch</div>
+          <div class="svc-chip">SSENSE</div>
+          <div class="svc-chip">Net-A-Porter</div>
+          <div class="svc-chip">Myprotein</div>
+        </div>
+        <div class="catalog-panel" id="tab-work">
+          <div class="svc-chip">Notion</div>
+          <div class="svc-chip">Figma</div>
+          <div class="svc-chip">Adobe CC</div>
+          <div class="svc-chip">GitHub</div>
+          <div class="svc-chip">Slack</div>
+          <div class="svc-chip">Zoom</div>
+          <div class="svc-chip">Canva Pro</div>
+          <div class="svc-chip">Dropbox</div>
+          <div class="svc-chip">1Password</div>
+          <div class="svc-chip">Loom</div>
+          <div class="svc-chip">Linear</div>
+          <div class="svc-chip">Vercel</div>
+        </div>
+        <div class="catalog-panel" id="tab-games">
+          <div class="svc-chip">Steam</div>
+          <div class="svc-chip">PlayStation</div>
+          <div class="svc-chip">Xbox</div>
+          <div class="svc-chip">Epic Games</div>
+          <div class="svc-chip">Nintendo</div>
+          <div class="svc-chip">GOG</div>
+          <div class="svc-chip">Humble Bundle</div>
+          <div class="svc-chip">EA Play</div>
+          <div class="svc-chip">Ubisoft+</div>
+          <div class="svc-chip">Roblox</div>
+          <div class="svc-chip">Battle.net</div>
+          <div class="svc-chip">Twitch</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PRICING ===================== -->
+<section class="section" id="pricing">
+  <div class="section__inner">
+    <div class="section__head">
+      <h2 class="section__title" data-i18n="price.title">Выберите свою <span class="accent">карту</span></h2>
+      <p class="section__sub" data-i18n="price.sub">Три варианта для любых потребностей. Пополнение через USDT</p>
+    </div>
+    <div class="pricing-grid">
+      <!-- Card 1: Subscription -->
+      <div class="pricing-card">
+        <div class="pricing-header">
+          <div class="pcard pcard--sub">
+            <div class="pcard__chip"></div>
+            <div class="pcard__name">VirtCardPay</div>
+            <div class="pcard__num">4242 •••• •••• ••••</div>
+            <div class="pcard__brand">VISA</div>
+          </div>
+        </div>
+        <div class="pricing-body">
+          <div class="pricing-title" data-i18n="card1.name">Subscription</div>
+          <div class="pricing-desc" data-i18n="card1.desc">Для онлайн-подписок и стриминга</div>
+          <div class="pricing-rows">
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.issue">Выпуск карты</span>
+              <span class="row-val green" data-i18n="row.free">Бесплатно</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.topup">Пополнение USDT</span>
+              <span class="row-val">1.5%</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.fee">Комиссия за транзакцию</span>
+              <span class="row-val">$0.25</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.apple">Apple Pay</span>
+              <span class="check">✓</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.google">Google Pay</span>
+              <span class="check">✓</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.3ds">3D Secure</span>
+              <span class="check">✓</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.support">Поддержка 24/7</span>
+              <span class="check">✓</span>
+            </div>
+          </div>
+          <a href="https://t.me/virtcardpay" target="_blank" rel="noopener" class="pricing-cta blue">
+            <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.95 8.17l-2.03 9.56c-.15.67-.54.84-1.09.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.61.3l.21-3.02 5.47-4.94c.24-.21-.05-.33-.36-.12L7.08 14.52l-2.96-.93c-.64-.2-.65-.64.14-.95l11.57-4.46c.53-.2 1 .13.83.99z"/></svg>
+            <span data-i18n="price.cta">Получить в Telegram</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 2: Travel (Featured) -->
+      <div class="pricing-card featured">
+        <div class="pricing-badge-top" data-i18n="price.popular">Популярная</div>
+        <div class="pricing-header">
+          <div class="pcard pcard--travel">
+            <div class="pcard__chip"></div>
+            <div class="pcard__name">VirtCardPay</div>
+            <div class="pcard__num">5367 •••• •••• ••••</div>
+            <div class="pcard__brand">MC</div>
+          </div>
+        </div>
+        <div class="pricing-body">
+          <div class="pricing-title" data-i18n="card2.name">Travel</div>
+          <div class="pricing-desc" data-i18n="card2.desc">Для путешествий и онлайн-шопинга</div>
+          <div class="pricing-rows">
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.issue">Выпуск карты</span>
+              <span class="row-val green" data-i18n="row.free">Бесплатно</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.topup">Пополнение USDT</span>
+              <span class="row-val">1.2%</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.fee">Комиссия за транзакцию</span>
+              <span class="row-val">$0.20</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.apple">Apple Pay</span>
+              <span class="check">✓</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.google">Google Pay</span>
+              <span class="check">✓</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.3ds">3D Secure</span>
+              <span class="check">✓</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.support">Поддержка 24/7</span>
+              <span class="check">✓</span>
+            </div>
+          </div>
+          <a href="https://t.me/virtcardpay" target="_blank" rel="noopener" class="pricing-cta blue">
+            <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.95 8.17l-2.03 9.56c-.15.67-.54.84-1.09.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.61.3l.21-3.02 5.47-4.94c.24-.21-.05-.33-.36-.12L7.08 14.52l-2.96-.93c-.64-.2-.65-.64.14-.95l11.57-4.46c.53-.2 1 .13.83.99z"/></svg>
+            <span data-i18n="price.cta">Получить в Telegram</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 3: Premium -->
+      <div class="pricing-card">
+        <div class="pricing-header">
+          <div class="pcard pcard--pro">
+            <div class="pcard__chip"></div>
+            <div class="pcard__name">VirtCardPay</div>
+            <div class="pcard__num">4111 •••• •••• ••••</div>
+            <div class="pcard__brand">VISA</div>
+          </div>
+        </div>
+        <div class="pricing-body">
+          <div class="pricing-title" data-i18n="card3.name">Premium</div>
+          <div class="pricing-desc" data-i18n="card3.desc">Максимальные лимиты и приоритетная поддержка</div>
+          <div class="pricing-rows">
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.issue">Выпуск карты</span>
+              <span class="row-val">$9.99</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.topup">Пополнение USDT</span>
+              <span class="row-val green">0.9%</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.fee">Комиссия за транзакцию</span>
+              <span class="row-val green" data-i18n="row.zero">$0</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.apple">Apple Pay</span>
+              <span class="check">✓</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.google">Google Pay</span>
+              <span class="check">✓</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.3ds">3D Secure</span>
+              <span class="check">✓</span>
+            </div>
+            <div class="pricing-row">
+              <span class="row-label" data-i18n="row.priority">Приоритетная поддержка</span>
+              <span class="check">✓</span>
+            </div>
+          </div>
+          <a href="https://t.me/virtcardpay" target="_blank" rel="noopener" class="pricing-cta dark">
+            <svg viewBox="0 0 24 24" fill="white" width="16" height="16"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.95 8.17l-2.03 9.56c-.15.67-.54.84-1.09.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.61.3l.21-3.02 5.47-4.94c.24-.21-.05-.33-.36-.12L7.08 14.52l-2.96-.93c-.64-.2-.65-.64.14-.95l11.57-4.46c.53-.2 1 .13.83.99z"/></svg>
+            <span data-i18n="price.cta">Получить в Telegram</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ADVANTAGES ===================== -->
+<section class="section section--grey">
+  <div class="section__inner">
+    <div class="section__head">
+      <h2 class="section__title" data-i18n="adv.title">Наши <span class="accent">преимущества</span></h2>
+      <p class="section__sub" data-i18n="adv.sub">Безопасность, скорость и удобство — в каждой функции</p>
+    </div>
+    <div class="adv-grid">
+      <div class="adv-card adv-card--featured">
+        <div class="adv-icon">🔒</div>
+        <div>
+          <div class="adv-card__title" data-i18n="adv1.title">3D Secure защита</div>
+          <p class="adv-card__desc" data-i18n="adv1.desc">
+            Каждая транзакция защищена протоколом 3D Secure. Ваши деньги в безопасности при любой оплате онлайн.
+          </p>
+        </div>
+      </div>
+      <div class="adv-card">
+        <div class="adv-icon">⚡</div>
+        <div>
+          <div class="adv-card__title" data-i18n="adv2.title">Мгновенное зачисление USDT</div>
+          <p class="adv-card__desc" data-i18n="adv2.desc">
+            Пополнение через USDT зачисляется в течение 1–5 минут после подтверждения транзакции в блокчейне.
+          </p>
+        </div>
+      </div>
+      <div class="adv-card">
+        <div class="adv-icon">🤖</div>
+        <div>
+          <div class="adv-card__title" data-i18n="adv3.title">Поддержка 24/7 в Telegram</div>
+          <p class="adv-card__desc" data-i18n="adv3.desc">
+            Команда поддержки доступна круглосуточно прямо в Telegram. Ответим на любой вопрос в течение минуты.
+          </p>
+        </div>
+      </div>
+      <div class="adv-card">
+        <div class="adv-icon">🌍</div>
+        <div>
+          <div class="adv-card__title" data-i18n="adv4.title">Работает в 200+ странах</div>
+          <p class="adv-card__desc" data-i18n="adv4.desc">
+            Visa и Mastercard принимаются по всему миру. Никаких санкций, никаких ограничений — платите везде.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ACHIEVEMENTS ===================== -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__head">
+      <h2 class="section__title" data-i18n="ach.title">VirtCardPay <span class="accent">в цифрах</span></h2>
+    </div>
+    <div class="ach-grid">
+      <div class="ach-card">
+        <div class="ach-icon">👥</div>
+        <div class="ach-num">50 000+</div>
+        <div class="ach-title" data-i18n="ach1.title">Активных пользователей</div>
+        <p class="ach-desc" data-i18n="ach1.desc">Клиенты из 40+ стран доверяют нам ежедневные платежи</p>
+      </div>
+      <div class="ach-card">
+        <div class="ach-icon">💳</div>
+        <div class="ach-num">120 000+</div>
+        <div class="ach-title" data-i18n="ach2.title">Выпущенных карт</div>
+        <p class="ach-desc" data-i18n="ach2.desc">Visa и Mastercard для онлайн-платежей по всему миру</p>
+      </div>
+      <div class="ach-card">
+        <div class="ach-icon">⭐</div>
+        <div class="ach-num">4.9 / 5.0</div>
+        <div class="ach-title" data-i18n="ach3.title">Средняя оценка</div>
+        <p class="ach-desc" data-i18n="ach3.desc">По отзывам пользователей в Telegram и независимых платформах</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== REVIEWS ===================== -->
+<section class="section section--grey" id="reviews">
+  <div class="section__inner">
+    <div class="section__head">
+      <h2 class="section__title" data-i18n="rev.title">Что говорят <span class="accent">наши клиенты</span></h2>
+      <p class="section__sub" data-i18n="rev.sub">Реальные отзывы пользователей VirtCardPay</p>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="rev1.text">
+          "Наконец-то нашёл нормальный способ оплатить ChatGPT Plus и Midjourney. Карта выпустилась за 2 минуты, USDT зачислился быстро. Всё работает идеально!"
+        </p>
+        <div class="review-author">
+          <div class="review-avatar" style="background:linear-gradient(135deg,#3B82F6,#7C3AED);">А</div>
+          <div>
+            <div class="review-name">Алексей К.</div>
+            <div class="review-date" data-i18n="rev.date1">2 недели назад</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="rev2.text">
+          "Пользуюсь для Netflix и Amazon. Всё работает без проблем. Поддержка ответила за 3 минуты когда возник вопрос. Рекомендую всем!"
+        </p>
+        <div class="review-author">
+          <div class="review-avatar" style="background:linear-gradient(135deg,#10B981,#3B82F6);">М</div>
+          <div>
+            <div class="review-name">Мария В.</div>
+            <div class="review-date" data-i18n="rev.date2">1 месяц назад</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="rev3.text">
+          "Живу за границей, очень удобно. Карта работает в любом интернет-магазине. Пополнение через USDT — супер быстро и без лишних вопросов."
+        </p>
+        <div class="review-author">
+          <div class="review-avatar" style="background:linear-gradient(135deg,#F59E0B,#EF4444);">Д</div>
+          <div>
+            <div class="review-name">Дмитрий С.</div>
+            <div class="review-date" data-i18n="rev.date3">3 недели назад</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== REFERRAL ===================== -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__head">
+      <h2 class="section__title" data-i18n="ref.title">Реферальная <span class="accent">программа</span></h2>
+      <p class="section__sub" data-i18n="ref.sub">Приглашайте друзей и получайте бонусы за каждого нового пользователя</p>
+    </div>
+    <div class="ref-grid">
+      <div class="ref-card">
+        <div class="ref-num" data-i18n="ref.step1">Шаг 1</div>
+        <div class="ref-icon">🔗</div>
+        <div class="ref-title" data-i18n="ref1.title">Получите реф-ссылку</div>
+        <p class="ref-desc" data-i18n="ref1.desc">В боте @virtcardpay перейдите в раздел «Реферальная программа» и скопируйте вашу уникальную ссылку</p>
+      </div>
+      <div class="ref-card">
+        <div class="ref-num" data-i18n="ref.step2">Шаг 2</div>
+        <div class="ref-icon">📤</div>
+        <div class="ref-title" data-i18n="ref2.title">Поделитесь ссылкой</div>
+        <p class="ref-desc" data-i18n="ref2.desc">Отправьте ссылку друзьям, опубликуйте в соцсетях или блоге — чем больше переходов, тем больше бонусов</p>
+      </div>
+      <div class="ref-card">
+        <div class="ref-num" data-i18n="ref.step3">Шаг 3</div>
+        <div class="ref-icon">👤</div>
+        <div class="ref-title" data-i18n="ref3.title">Друг регистрируется</div>
+        <p class="ref-desc" data-i18n="ref3.desc">Ваш друг переходит по ссылке, регистрируется и выпускает первую карту</p>
+      </div>
+      <div class="ref-card">
+        <div class="ref-num" data-i18n="ref.step4">Шаг 4</div>
+        <div class="ref-icon">💰</div>
+        <div class="ref-title" data-i18n="ref4.title">Вы получаете бонус</div>
+        <p class="ref-desc" data-i18n="ref4.desc">Бонус зачисляется на баланс вашей карты автоматически после первого пополнения другом</p>
+      </div>
+    </div>
+    <div class="tg-cta-section">
+      <a href="https://t.me/virtcardpay" target="_blank" rel="noopener" class="btn-hero tg">
+        <svg viewBox="0 0 24 24" fill="white" width="20" height="20">
+          <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.95 8.17l-2.03 9.56c-.15.67-.54.84-1.09.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.61.3l.21-3.02 5.47-4.94c.24-.21-.05-.33-.36-.12L7.08 14.52l-2.96-.93c-.64-.2-.65-.64.14-.95l11.57-4.46c.53-.2 1 .13.83.99z"/>
+        </svg>
+        <span data-i18n="ref.cta">Участвовать в программе</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section class="section section--grey" id="faq">
+  <div class="section__inner">
+    <div class="section__head">
+      <h2 class="section__title" data-i18n="faq.title">Часто задаваемые <span class="accent">вопросы</span></h2>
+    </div>
+    <div class="faq-list" style="max-width:800px;margin:0 auto;">
+
+      <div class="faq-item">
+        <button class="faq-q">
+          <span data-i18n="faq1.q">Как пополнить карту через USDT?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner" data-i18n="faq1.a">
+          В боте @virtcardpay перейдите в раздел «Пополнить» и выберите «USDT». Вы получите персональный адрес кошелька (TRC-20 или ERC-20). Отправьте USDT на этот адрес — средства зачислятся на баланс карты в течение 1–5 минут после подтверждения в сети.
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          <span data-i18n="faq2.q">Когда появится пополнение рублями?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner" data-i18n="faq2.a">
+          Пополнение рублями через банковский перевод находится в разработке и появится в ближайшее время. Следите за обновлениями в нашем Telegram-канале. Подпишитесь, чтобы не пропустить анонс.
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          <span data-i18n="faq3.q">Карта настоящая или виртуальная?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner" data-i18n="faq3.a">
+          VirtCardPay выпускает виртуальные карты Visa и Mastercard с полными реквизитами: номер, CVV, срок действия. Карту можно привязать к Apple Pay и Google Pay для бесконтактной оплаты. Физическую карту не выдаём.
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          <span data-i18n="faq4.q">Безопасно ли это?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner" data-i18n="faq4.a">
+          Да. Все транзакции защищены протоколом 3D Secure. Реквизиты карты хранятся в зашифрованном виде. Мы не передаём данные третьим лицам и работаем в соответствии с PCI DSS стандартами безопасности.
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          <span data-i18n="faq5.q">Где работает карта?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner" data-i18n="faq5.a">
+          Карты VirtCardPay принимаются в более чем 200 странах на всех сайтах и платформах, поддерживающих Visa или Mastercard. Netflix, Spotify, ChatGPT, Amazon, Booking, Airbnb — всё доступно без ограничений.
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          <span data-i18n="faq6.q">Какая минимальная сумма пополнения?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner" data-i18n="faq6.a">
+          Минимальная сумма пополнения через USDT — $10. Максимальная сумма зависит от тарифного плана: Subscription — до $1,000 в месяц, Travel — до $5,000, Premium — до $20,000.
+        </div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          <span data-i18n="faq7.q">Как связаться с поддержкой?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner" data-i18n="faq7.a">
+          Напишите нам прямо в Telegram: @virtcardpay_support. Поддержка работает 24/7. Среднее время ответа — до 5 минут. Для держателей Premium-карт — приоритетная поддержка с ответом до 1 минуты.
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CONTACTS (PLACEHOLDER) ===================== -->
+<section class="section" id="contacts">
+  <div class="section__inner">
+    <div class="section__head">
+      <h2 class="section__title" data-i18n="cont.title">Свяжитесь с <span class="accent">нами</span></h2>
+      <p class="section__sub" data-i18n="cont.sub">Остались вопросы? Мы на связи 24/7</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:900px;margin:0 auto;">
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:14px;">💬</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px;" data-i18n="cont.tg">Telegram поддержка</div>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;" data-i18n="cont.tg.desc">Самый быстрый способ получить помощь</p>
+        <a href="https://t.me/virtcardpay_support" target="_blank" rel="noopener"
+          style="display:inline-flex;align-items:center;gap:8px;padding:11px 22px;background:linear-gradient(135deg,#2AABEE,#1A8CC7);color:white;border-radius:10px;font-size:14px;font-weight:700;transition:all .25s;"
+          onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.95 8.17l-2.03 9.56c-.15.67-.54.84-1.09.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.61.3l.21-3.02 5.47-4.94c.24-.21-.05-.33-.36-.12L7.08 14.52l-2.96-.93c-.64-.2-.65-.64.14-.95l11.57-4.46c.53-.2 1 .13.83.99z"/></svg>
+          @virtcardpay_support
+        </a>
+      </div>
+      <div style="background:var(--bg-card);border:1px dashed var(--border);border-radius:var(--radius);padding:28px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:14px;">📧</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px;" data-i18n="cont.email">Email</div>
+        <p style="font-size:13px;color:var(--text-muted);font-style:italic;" data-i18n="cont.email.ph">Скоро — support@virtcardpay.com</p>
+      </div>
+      <div style="background:var(--bg-card);border:1px dashed var(--border);border-radius:var(--radius);padding:28px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:14px;">📢</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:8px;" data-i18n="cont.channel">Telegram канал</div>
+        <p style="font-size:13px;color:var(--text-muted);font-style:italic;" data-i18n="cont.channel.ph">Новости и обновления — скоро</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="footer-grid">
+    <!-- Brand column -->
+    <div>
+      <div class="footer-logo">
+        <div class="footer-logo__icon">
+          <svg viewBox="0 0 24 24"><rect x="1" y="5" width="22" height="14" rx="3" fill="none" stroke="white" stroke-width="1.8"/><path d="M1 9h22" stroke="white" stroke-width="1.8"/><rect x="4" y="13" width="6" height="2" rx="1" fill="white"/></svg>
+        </div>
+        <span class="footer-logo__text">Virt<span>Card</span>Pay</span>
+      </div>
+      <p class="footer-desc" data-i18n="foot.desc">
+        VirtCardPay — виртуальные Visa и Mastercard с пополнением через USDT. Получите карту за 2 минуты прямо в Telegram и оплачивайте любые иностранные сервисы.
+      </p>
+      <div class="footer-legal">
+        <em data-i18n="foot.legal.ph">Юридическая информация будет размещена здесь. Legal information will be placed here.</em>
+      </div>
+    </div>
+
+    <!-- Links: Cards -->
+    <div class="footer-col">
+      <h4 data-i18n="foot.col1">Карты</h4>
+      <ul class="footer-links">
+        <li><a href="#pricing" data-i18n="foot.sub">Subscription</a></li>
+        <li><a href="#pricing" data-i18n="foot.travel">Travel</a></li>
+        <li><a href="#pricing" data-i18n="foot.premium">Premium</a></li>
+        <li><a href="#services" data-i18n="foot.services">Поддерживаемые сервисы</a></li>
+      </ul>
+    </div>
+
+    <!-- Links: Company -->
+    <div class="footer-col">
+      <h4 data-i18n="foot.col2">Компания</h4>
+      <ul class="footer-links">
+        <li><a href="#" data-i18n="foot.about">О нас</a></li>
+        <li><a href="#" data-i18n="foot.blog">Блог</a></li>
+        <li><a href="#faq" data-i18n="foot.faq">FAQ</a></li>
+        <li><a href="#" data-i18n="foot.ref">Реферальная программа</a></li>
+      </ul>
+    </div>
+
+    <!-- Contacts placeholder -->
+    <div class="footer-col">
+      <h4 data-i18n="foot.col3">Контакты</h4>
+      <div class="footer-contact-box">
+        <em data-i18n="foot.contact.ph">Контактная информация скоро появится здесь.<br/>Contact information coming soon.</em>
+      </div>
+      <a href="https://t.me/virtcardpay" target="_blank" rel="noopener" class="footer-contact-tg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#7DD3FC"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.95 8.17l-2.03 9.56c-.15.67-.54.84-1.09.52l-3-2.21-1.45 1.4c-.16.16-.3.3-.61.3l.21-3.02 5.47-4.94c.24-.21-.05-.33-.36-.12L7.08 14.52l-2.96-.93c-.64-.2-.65-.64.14-.95l11.57-4.46c.53-.2 1 .13.83.99z"/></svg>
+        @virtcardpay
+      </a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-bottom-links">
+      <a href="#" data-i18n="foot.privacy">Политика конфиденциальности</a>
+      <a href="#" data-i18n="foot.terms">Условия использования</a>
+      <a href="#" data-i18n="foot.aml">AML политика</a>
+    </div>
+    <div class="footer-copy">© 2024–2025 VirtCardPay. <span data-i18n="foot.rights">Все права защищены.</span></div>
+  </div>
+</footer>
+
+<!-- ===================== JAVASCRIPT ===================== -->
+<script>
+/* =========================================================
+   TRANSLATIONS (RU / EN)
+========================================================= */
+const T = {
+  ru: {
+    'nav.cards':'Виртуальные карты','nav.how':'Как работает','nav.pricing':'Тарифы',
+    'nav.faq':'FAQ','nav.contacts':'Контакты','nav.cta':'Получить карту',
+    'nav.light':'Светлая','nav.dark':'Тёмная',
+    'hero.eyebrow':'Виртуальные карты нового поколения',
+    'hero.h1a':'Иностранная карта','hero.h1b':'с пополнением USDT',
+    'hero.sub':'Получите виртуальную Visa/Mastercard за 2 минуты прямо в Telegram. Оплачивайте подписки, AI-сервисы, travel и интернет-магазины по всему миру.',
+    'hero.cta1':'Открыть карту в Telegram','hero.cta2':'Узнать подробнее',
+    'badge.usdt':'Пополнение USDT (TRC-20 / ERC-20)','badge.rub':'Пополнение рублями','badge.soon':'Скоро',
+    'badge.secure':'3D Secure защита','badge.paid':'Оплачено','badge.speed':'Скорость открытия','badge.min':'2 минуты',
+    'phone.balance':'Баланс карты','phone.topup':'Пополнить','phone.transfer':'Перевод','phone.history':'История',
+    'stats.prefix':'Уже более','stats.suffix':'активных пользователей доверяют VirtCardPay',
+    'feat.title':'Почему выбирают VirtCardPay','feat.sub':'Простой и безопасный способ оплачивать иностранные сервисы без ограничений',
+    'feat1.title':'Открытие за 2 минуты','feat1.desc':'Зарегистрируйтесь через Telegram-бот и получите виртуальную карту моментально — без банка, без документов, без ожидания.',
+    'feat2.title':'Пополнение через USDT','feat2.desc':'Пополняйте карту криптовалютой USDT (TRC-20, ERC-20) мгновенно. Пополнение рублями появится совсем скоро.',
+    'feat3.title':'Работает по всему миру','feat3.desc':'Visa и Mastercard — принимаются в 200+ странах и миллионах интернет-магазинов. Без ограничений и блокировок.',
+    'feat4.title':'Apple Pay & Google Pay','feat4.desc':'Привяжите карту к Apple Wallet или Google Pay за 1 минуту и платите бесконтактно в любом магазине.',
+    'how.title':'Карта в Telegram за 2 минуты','how.sub':'Никаких отделений банка, никаких документов — только Telegram','how.cta':'Открыть карту бесплатно',
+    'step.num1':'Шаг 1','step.num2':'Шаг 2','step.num3':'Шаг 3','step.num4':'Шаг 4','step.num5':'Шаг 5',
+    'step1.title':'Откройте бот','step1.desc':'Перейдите в ','step1.desc2':' и нажмите «Старт»',
+    'step2.title':'Регистрация','step2.desc':'Укажите имя и email. Это займёт меньше минуты',
+    'step3.title':'Выберите карту','step3.desc':'Subscription, Travel или Premium — на любой случай жизни',
+    'step4.title':'Пополните USDT','step4.desc':'Отправьте USDT на ваш персональный адрес — зачисление моментально',
+    'step5.title':'Платите везде!','step5.desc':'Netflix, ChatGPT, Amazon, Booking — теперь всё доступно',
+    'usdt.title':'Пополнение карты через USDT',
+    'usdt.desc':'Отправьте USDT на персональный адрес кошелька — средства поступают на баланс карты в течение нескольких минут. Комиссия сети — минимальная. Пополнение рублями через банк появится в ближайшее время.',
+    'usdt.tag1':'Мгновенное зачисление','usdt.tag2':'Без лимитов','usdt.tag3':'Рубли — скоро','usdt.cta':'Пополнить сейчас',
+    'pay.title':'Привяжите к Apple Pay или Google Pay','pay.sub':'Добавьте вашу виртуальную карту в смартфон за 1 минуту',
+    'pay.apple':'Добавьте карту VirtCardPay в Apple Wallet и платите бесконтактно на iPhone, iPad и Apple Watch. iOS 14+ и выше.',
+    'pay.google':'Добавьте карту в Google Wallet и платите через Android. Работает на всех устройствах с NFC и Android 8+.',
+    'svc.title':'Оплачивайте любые зарубежные сервисы','svc.sub':'Тысячи платформ и магазинов — всё работает с VirtCardPay',
+    'tab.streaming':'🎬 Стриминг','tab.ai':'🤖 AI сервисы','tab.travel':'✈️ Путешествия',
+    'tab.shopping':'🛍️ Шопинг','tab.work':'💼 Работа & Инструменты','tab.games':'🎮 Игры',
+    'price.title':'Выберите свою карту','price.sub':'Три варианта для любых потребностей. Пополнение через USDT',
+    'price.popular':'Популярная','price.cta':'Получить в Telegram',
+    'card1.name':'Subscription','card1.desc':'Для онлайн-подписок и стриминга',
+    'card2.name':'Travel','card2.desc':'Для путешествий и онлайн-шопинга',
+    'card3.name':'Premium','card3.desc':'Максимальные лимиты и приоритетная поддержка',
+    'row.issue':'Выпуск карты','row.free':'Бесплатно','row.topup':'Пополнение USDT',
+    'row.fee':'Комиссия за транзакцию','row.zero':'$0','row.apple':'Apple Pay',
+    'row.google':'Google Pay','row.3ds':'3D Secure','row.support':'Поддержка 24/7','row.priority':'Приоритетная поддержка',
+    'adv.title':'Наши преимущества','adv.sub':'Безопасность, скорость и удобство — в каждой функции',
+    'adv1.title':'3D Secure защита','adv1.desc':'Каждая транзакция защищена протоколом 3D Secure. Ваши деньги в безопасности при любой оплате онлайн.',
+    'adv2.title':'Мгновенное зачисление USDT','adv2.desc':'Пополнение через USDT зачисляется в течение 1–5 минут после подтверждения транзакции в блокчейне.',
+    'adv3.title':'Поддержка 24/7 в Telegram','adv3.desc':'Команда поддержки доступна круглосуточно прямо в Telegram. Ответим на любой вопрос в течение минуты.',
+    'adv4.title':'Работает в 200+ странах','adv4.desc':'Visa и Mastercard принимаются по всему миру. Никаких санкций, никаких ограничений — платите везде.',
+    'ach.title':'VirtCardPay в цифрах',
+    'ach1.title':'Активных пользователей','ach1.desc':'Клиенты из 40+ стран доверяют нам ежедневные платежи',
+    'ach2.title':'Выпущенных карт','ach2.desc':'Visa и Mastercard для онлайн-платежей по всему миру',
+    'ach3.title':'Средняя оценка','ach3.desc':'По отзывам пользователей в Telegram и независимых платформах',
+    'rev.title':'Что говорят наши клиенты','rev.sub':'Реальные отзывы пользователей VirtCardPay',
+    'rev1.text':'"Наконец-то нашёл нормальный способ оплатить ChatGPT Plus и Midjourney. Карта выпустилась за 2 минуты, USDT зачислился быстро. Всё работает идеально!"',
+    'rev2.text':'"Пользуюсь для Netflix и Amazon. Всё работает без проблем. Поддержка ответила за 3 минуты когда возник вопрос. Рекомендую всем!"',
+    'rev3.text':'"Живу за границей, очень удобно. Карта работает в любом интернет-магазине. Пополнение через USDT — супер быстро и без лишних вопросов."',
+    'rev.date1':'2 недели назад','rev.date2':'1 месяц назад','rev.date3':'3 недели назад',
+    'ref.title':'Реферальная программа','ref.sub':'Приглашайте друзей и получайте бонусы за каждого нового пользователя',
+    'ref.step1':'Шаг 1','ref.step2':'Шаг 2','ref.step3':'Шаг 3','ref.step4':'Шаг 4',
+    'ref1.title':'Получите реф-ссылку','ref1.desc':'В боте @virtcardpay перейдите в раздел «Реферальная программа» и скопируйте вашу уникальную ссылку',
+    'ref2.title':'Поделитесь ссылкой','ref2.desc':'Отправьте ссылку друзьям, опубликуйте в соцсетях или блоге — чем больше переходов, тем больше бонусов',
+    'ref3.title':'Друг регистрируется','ref3.desc':'Ваш друг переходит по ссылке, регистрируется и выпускает первую карту',
+    'ref4.title':'Вы получаете бонус','ref4.desc':'Бонус зачисляется на баланс вашей карты автоматически после первого пополнения другом',
+    'ref.cta':'Участвовать в программе',
+    'faq.title':'Часто задаваемые вопросы',
+    'faq1.q':'Как пополнить карту через USDT?','faq1.a':'В боте @virtcardpay перейдите в раздел «Пополнить» и выберите «USDT». Вы получите персональный адрес кошелька (TRC-20 или ERC-20). Отправьте USDT на этот адрес — средства зачислятся на баланс карты в течение 1–5 минут после подтверждения в сети.',
+    'faq2.q':'Когда появится пополнение рублями?','faq2.a':'Пополнение рублями через банковский перевод находится в разработке и появится в ближайшее время. Следите за обновлениями в нашем Telegram-канале.',
+    'faq3.q':'Карта настоящая или виртуальная?','faq3.a':'VirtCardPay выпускает виртуальные карты Visa и Mastercard с полными реквизитами: номер, CVV, срок действия. Карту можно привязать к Apple Pay и Google Pay. Физическую карту не выдаём.',
+    'faq4.q':'Безопасно ли это?','faq4.a':'Да. Все транзакции защищены протоколом 3D Secure. Реквизиты карты хранятся в зашифрованном виде. Мы работаем в соответствии с PCI DSS стандартами безопасности.',
+    'faq5.q':'Где работает карта?','faq5.a':'Карты VirtCardPay принимаются в более чем 200 странах. Netflix, Spotify, ChatGPT, Amazon, Booking, Airbnb — всё доступно без ограничений.',
+    'faq6.q':'Какая минимальная сумма пополнения?','faq6.a':'Минимальная сумма пополнения через USDT — $10. Максимум зависит от плана: Subscription — $1,000/мес, Travel — $5,000, Premium — $20,000.',
+    'faq7.q':'Как связаться с поддержкой?','faq7.a':'Напишите нам в Telegram: @virtcardpay_support. Поддержка работает 24/7. Среднее время ответа — до 5 минут.',
+    'cont.title':'Свяжитесь с нами','cont.sub':'Остались вопросы? Мы на связи 24/7',
+    'cont.tg':'Telegram поддержка','cont.tg.desc':'Самый быстрый способ получить помощь',
+    'cont.email':'Email','cont.email.ph':'Скоро — support@virtcardpay.com',
+    'cont.channel':'Telegram канал','cont.channel.ph':'Новости и обновления — скоро',
+    'foot.desc':'VirtCardPay — виртуальные Visa и Mastercard с пополнением через USDT. Получите карту за 2 минуты прямо в Telegram.',
+    'foot.legal.ph':'Юридическая информация будет размещена здесь. Legal information will be placed here.',
+    'foot.col1':'Карты','foot.col2':'Компания','foot.col3':'Контакты',
+    'foot.sub':'Subscription','foot.travel':'Travel','foot.premium':'Premium','foot.services':'Поддерживаемые сервисы',
+    'foot.about':'О нас','foot.blog':'Блог','foot.faq':'FAQ','foot.ref':'Реферальная программа',
+    'foot.contact.ph':'Контактная информация скоро появится здесь.',
+    'foot.privacy':'Политика конфиденциальности','foot.terms':'Условия использования','foot.aml':'AML политика',
+    'foot.rights':'Все права защищены.'
+  },
+  en: {
+    'nav.cards':'Virtual Cards','nav.how':'How It Works','nav.pricing':'Pricing',
+    'nav.faq':'FAQ','nav.contacts':'Contacts','nav.cta':'Get a Card',
+    'nav.light':'Light','nav.dark':'Dark',
+    'hero.eyebrow':'Next-Generation Virtual Cards',
+    'hero.h1a':'Foreign Card','hero.h1b':'topped up with USDT',
+    'hero.sub':'Get a virtual Visa/Mastercard in 2 minutes directly in Telegram. Pay for subscriptions, AI services, travel and online stores worldwide.',
+    'hero.cta1':'Open Card in Telegram','hero.cta2':'Learn More',
+    'badge.usdt':'USDT Top-up (TRC-20 / ERC-20)','badge.rub':'Ruble Top-up','badge.soon':'Soon',
+    'badge.secure':'3D Secure Protection','badge.paid':'Paid','badge.speed':'Opening speed','badge.min':'2 minutes',
+    'phone.balance':'Card Balance','phone.topup':'Top Up','phone.transfer':'Transfer','phone.history':'History',
+    'stats.prefix':'Already over','stats.suffix':'active users trust VirtCardPay',
+    'feat.title':'Why Choose VirtCardPay','feat.sub':'Simple and secure way to pay for foreign services without restrictions',
+    'feat1.title':'Open in 2 Minutes','feat1.desc':'Register via Telegram bot and get your virtual card instantly — no bank, no documents, no waiting.',
+    'feat2.title':'USDT Top-Up','feat2.desc':'Top up your card with USDT (TRC-20, ERC-20) instantly. Ruble top-up coming very soon.',
+    'feat3.title':'Works Worldwide','feat3.desc':'Visa and Mastercard — accepted in 200+ countries and millions of online stores. No restrictions or blocks.',
+    'feat4.title':'Apple Pay & Google Pay','feat4.desc':'Add your card to Apple Wallet or Google Pay in 1 minute and pay contactlessly at any store.',
+    'how.title':'Card in Telegram in 2 Minutes','how.sub':'No bank branches, no documents — just Telegram','how.cta':'Get Your Free Card',
+    'step.num1':'Step 1','step.num2':'Step 2','step.num3':'Step 3','step.num4':'Step 4','step.num5':'Step 5',
+    'step1.title':'Open the Bot','step1.desc':'Go to ','step1.desc2':' and press "Start"',
+    'step2.title':'Registration','step2.desc':'Enter your name and email. Takes less than a minute.',
+    'step3.title':'Choose a Card','step3.desc':'Subscription, Travel or Premium — for any need.',
+    'step4.title':'Top Up with USDT','step4.desc':'Send USDT to your personal wallet address — credited instantly.',
+    'step5.title':'Pay Everywhere!','step5.desc':'Netflix, ChatGPT, Amazon, Booking — all accessible now.',
+    'usdt.title':'Card Top-Up via USDT',
+    'usdt.desc':'Send USDT to your personal wallet address — funds arrive on your card balance within minutes. Minimum network fee. Ruble bank top-up coming soon.',
+    'usdt.tag1':'Instant Credit','usdt.tag2':'No Limits','usdt.tag3':'Rubles — Coming Soon','usdt.cta':'Top Up Now',
+    'pay.title':'Link to Apple Pay or Google Pay','pay.sub':'Add your virtual card to your phone in 1 minute',
+    'pay.apple':'Add your VirtCardPay card to Apple Wallet and pay contactlessly on iPhone, iPad and Apple Watch. iOS 14+.',
+    'pay.google':'Add your card to Google Wallet and pay via Android. Works on all NFC devices with Android 8+.',
+    'svc.title':'Pay for Any Foreign Service','svc.sub':'Thousands of platforms and stores — all work with VirtCardPay',
+    'tab.streaming':'🎬 Streaming','tab.ai':'🤖 AI Services','tab.travel':'✈️ Travel',
+    'tab.shopping':'🛍️ Shopping','tab.work':'💼 Work & Tools','tab.games':'🎮 Games',
+    'price.title':'Choose Your Card','price.sub':'Three options for any need. Top up via USDT.',
+    'price.popular':'Popular','price.cta':'Get in Telegram',
+    'card1.name':'Subscription','card1.desc':'For online subscriptions and streaming',
+    'card2.name':'Travel','card2.desc':'For travel and online shopping',
+    'card3.name':'Premium','card3.desc':'Maximum limits and priority support',
+    'row.issue':'Card Issuance','row.free':'Free','row.topup':'USDT Top-Up',
+    'row.fee':'Transaction Fee','row.zero':'$0','row.apple':'Apple Pay',
+    'row.google':'Google Pay','row.3ds':'3D Secure','row.support':'24/7 Support','row.priority':'Priority Support',
+    'adv.title':'Our Advantages','adv.sub':'Security, speed and convenience — in every feature',
+    'adv1.title':'3D Secure Protection','adv1.desc':'Every transaction is protected by 3D Secure. Your money is safe with every online payment.',
+    'adv2.title':'Instant USDT Credit','adv2.desc':'USDT top-up is credited within 1–5 minutes after blockchain confirmation.',
+    'adv3.title':'24/7 Telegram Support','adv3.desc':'Our support team is available around the clock in Telegram. We answer any question within a minute.',
+    'adv4.title':'Works in 200+ Countries','adv4.desc':'Visa and Mastercard are accepted worldwide. No sanctions, no restrictions — pay everywhere.',
+    'ach.title':'VirtCardPay in Numbers',
+    'ach1.title':'Active Users','ach1.desc':'Clients from 40+ countries trust us for daily payments',
+    'ach2.title':'Cards Issued','ach2.desc':'Visa and Mastercard for online payments worldwide',
+    'ach3.title':'Average Rating','ach3.desc':'Based on user reviews in Telegram and independent platforms',
+    'rev.title':'What Our Clients Say','rev.sub':'Real reviews from VirtCardPay users',
+    'rev1.text':'"Finally found a proper way to pay for ChatGPT Plus and Midjourney. Card issued in 2 minutes, USDT deposited fast. Everything works perfectly!"',
+    'rev2.text':'"Using it for Netflix and Amazon. Works without any problems. Support replied in 3 minutes when I had a question. Highly recommend!"',
+    'rev3.text':'"Living abroad, very convenient. The card works at any online store. USDT top-up is super fast with no unnecessary questions."',
+    'rev.date1':'2 weeks ago','rev.date2':'1 month ago','rev.date3':'3 weeks ago',
+    'ref.title':'Referral Program','ref.sub':'Invite friends and earn bonuses for every new user',
+    'ref.step1':'Step 1','ref.step2':'Step 2','ref.step3':'Step 3','ref.step4':'Step 4',
+    'ref1.title':'Get Your Ref Link','ref1.desc':'In the @virtcardpay bot, go to "Referral Program" and copy your unique link',
+    'ref2.title':'Share the Link','ref2.desc':'Send it to friends, post on social media — more referrals means more bonuses',
+    'ref3.title':'Friend Registers','ref3.desc':'Your friend follows the link, registers and gets their first card',
+    'ref4.title':'You Get a Bonus','ref4.desc':'The bonus is credited to your card balance automatically after your friend\'s first top-up',
+    'ref.cta':'Join the Program',
+    'faq.title':'Frequently Asked Questions',
+    'faq1.q':'How do I top up the card with USDT?','faq1.a':'In the @virtcardpay bot go to "Top Up" and select "USDT". You will receive a personal wallet address (TRC-20 or ERC-20). Send USDT to this address — funds will be credited within 1–5 minutes after network confirmation.',
+    'faq2.q':'When will ruble top-up be available?','faq2.a':'Ruble top-up via bank transfer is in development and will be available soon. Follow updates in our Telegram channel.',
+    'faq3.q':'Is it a real or virtual card?','faq3.a':'VirtCardPay issues virtual Visa and Mastercard with full details: number, CVV, expiry date. The card can be added to Apple Pay and Google Pay. We do not issue physical cards.',
+    'faq4.q':'Is it safe?','faq4.a':'Yes. All transactions are protected by 3D Secure. Card details are stored encrypted. We operate in accordance with PCI DSS security standards.',
+    'faq5.q':'Where does the card work?','faq5.a':'VirtCardPay cards are accepted in over 200 countries. Netflix, Spotify, ChatGPT, Amazon, Booking, Airbnb — all accessible without restrictions.',
+    'faq6.q':'What is the minimum top-up amount?','faq6.a':'Minimum USDT top-up is $10. Maximum depends on plan: Subscription — $1,000/month, Travel — $5,000, Premium — $20,000.',
+    'faq7.q':'How do I contact support?','faq7.a':'Message us on Telegram: @virtcardpay_support. Support is available 24/7. Average response time is under 5 minutes.',
+    'cont.title':'Contact Us','cont.sub':'Still have questions? We are available 24/7',
+    'cont.tg':'Telegram Support','cont.tg.desc':'The fastest way to get help',
+    'cont.email':'Email','cont.email.ph':'Coming soon — support@virtcardpay.com',
+    'cont.channel':'Telegram Channel','cont.channel.ph':'News and updates — coming soon',
+    'foot.desc':'VirtCardPay — virtual Visa and Mastercard with USDT top-up. Get your card in 2 minutes directly in Telegram.',
+    'foot.legal.ph':'Legal information will be placed here. Юридическая информация будет размещена здесь.',
+    'foot.col1':'Cards','foot.col2':'Company','foot.col3':'Contacts',
+    'foot.sub':'Subscription','foot.travel':'Travel','foot.premium':'Premium','foot.services':'Supported Services',
+    'foot.about':'About Us','foot.blog':'Blog','foot.faq':'FAQ','foot.ref':'Referral Program',
+    'foot.contact.ph':'Contact information coming soon.',
+    'foot.privacy':'Privacy Policy','foot.terms':'Terms of Service','foot.aml':'AML Policy',
+    'foot.rights':'All rights reserved.'
+  }
+};
+
+/* =========================================================
+   STATE
+========================================================= */
+let currentLang  = localStorage.getItem('vcp_lang')  || 'ru';
+let currentTheme = localStorage.getItem('vcp_theme') || 'light';
+
+/* =========================================================
+   APPLY LANGUAGE
+========================================================= */
+function applyLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('vcp_lang', lang);
+  document.documentElement.setAttribute('data-lang', lang);
+  document.getElementById('langLabel').textContent = lang === 'ru' ? 'RU' : 'EN';
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (T[lang] && T[lang][key] !== undefined) {
+      el.textContent = T[lang][key];
+    }
+  });
+}
+
+/* =========================================================
+   APPLY THEME
+========================================================= */
+function applyTheme(theme) {
+  currentTheme = theme;
+  localStorage.setItem('vcp_theme', theme);
+  document.documentElement.setAttribute('data-theme', theme);
+
+  const icon  = document.getElementById('themeIcon');
+  const label = document.getElementById('themeLabel');
+
+  if (theme === 'dark') {
+    icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+    icon.setAttribute('fill','currentColor');
+    icon.setAttribute('stroke','none');
+    label.setAttribute('data-i18n','nav.light');
+  } else {
+    icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+    icon.setAttribute('fill','none');
+    icon.setAttribute('stroke','currentColor');
+    label.setAttribute('data-i18n','nav.dark');
+  }
+  // Update button label text after changing data-i18n
+  applyLang(currentLang);
+}
+
+/* =========================================================
+   INIT
+========================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Theme
+  applyTheme(currentTheme);
+
+  // Lang
+  applyLang(currentLang);
+
+  // Theme toggle button
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+  });
+
+  // Lang toggle button
+  document.getElementById('langToggle').addEventListener('click', () => {
+    applyLang(currentLang === 'ru' ? 'en' : 'ru');
+  });
+
+  // Hamburger / mobile menu
+  const hamburger   = document.getElementById('hamburger');
+  const mobileMenu  = document.getElementById('mobileMenu');
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  });
+
+  // Close mobile menu on link click
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+      hamburger.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.querySelector('.faq-q').addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      // Close all
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      // Toggle current
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+
+  // Service catalog tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tabId = btn.getAttribute('data-tab');
+
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.catalog-panel').forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      const panel = document.getElementById('tab-' + tabId);
+      if (panel) panel.classList.add('active');
+    });
+  });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const href = a.getAttribute('href');
+      if (href === '#') return;
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        const offset = 72; // nav height
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+
+  // Intersection Observer for fade-in animation
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll(
+    '.feature-card, .step-card, .pricing-card, .adv-card, .ach-card, .review-card, .ref-card, .faq-item, .pay-card'
+  ).forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease, border-color 0.25s ease, box-shadow 0.25s ease';
+    observer.observe(el);
+  });
+
+  // Detect system dark mode preference (first visit only)
+  if (!localStorage.getItem('vcp_theme')) {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      applyTheme('dark');
+    }
+  }
+});
+</script>
+</body>
+</html>
